@@ -12,6 +12,7 @@ import cors from 'cors';
 import connectDB from './config/database';
 import userRoutes from './routes/user.routes';
 import authRoutes from './routes/auth.routes';
+import projectRoutes from './routes/project.routes';
 
 // crear el servidor
 const app = express();
@@ -39,5 +40,6 @@ app.get('/', (req, res) => {
 // importar rutas
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/projects', projectRoutes)
 
 export default app;
