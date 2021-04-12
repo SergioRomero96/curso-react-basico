@@ -13,6 +13,7 @@ import connectDB from './config/database';
 import userRoutes from './routes/user.routes';
 import authRoutes from './routes/auth.routes';
 import projectRoutes from './routes/project.routes';
+import taskRoutes from './routes/task.routes';
 
 // crear el servidor
 const app = express();
@@ -29,7 +30,7 @@ app.set('port', PORT);
 // middlewares
 app.use(morgan('dev'));
 app.use(cors());
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 // Definir la página principal
@@ -40,6 +41,7 @@ app.get('/', (req, res) => {
 // importar rutas
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/projects', projectRoutes)
+app.use('/api/projects', projectRoutes);
+app.use('/api/tasks', taskRoutes);
 
 export default app;
