@@ -21,10 +21,10 @@ export const login = async (req: Request, res: Response) => {
 
         // revisar el password
         const correctPassword = await bcrypt.compare(password, user.password);
-        if(!correctPassword) {
-            return res.status(400).json({msg: 'Password Incorrecto'});
+        if (!correctPassword) {
+            return res.status(400).json({ msg: 'Password Incorrecto' });
         }
-        
+
         // si todo es correcto craer y firmar el JWT
         const payload = {
             user: {
@@ -40,5 +40,17 @@ export const login = async (req: Request, res: Response) => {
         });
     } catch (error) {
         console.log(error);
+    }
+}
+
+// obtiene el usuario autenticado
+export const getAuthenticatedUser = async (req: Request | any, res: Response) => {
+    try {
+        const user = await User.findById(req.user.id)
+            .select('-password');
+        res.json({ user });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ msg: 'Error en el servidor' });
     }
 }
