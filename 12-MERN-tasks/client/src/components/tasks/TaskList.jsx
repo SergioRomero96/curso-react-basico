@@ -18,7 +18,7 @@ const TaskList = () => {
 
     // Elimina un proyecto
     const onDelete = () => {
-        deleteProject(project.id);
+        deleteProject(project._id);
     }
 
     return (
