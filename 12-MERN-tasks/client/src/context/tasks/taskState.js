@@ -1,17 +1,13 @@
 import React, { useReducer } from 'react';
-import {v4 as uuidv4} from 'uuid';
-import { ACTUAL_TASK, ADD_TASK, CLEAN_TASK, DELETE_TASK, PROJECT_TASKS, TASK_STATUS, UPDATE_TASK, VALIDATE_TASK } from '../../types';
+// import { v4 as uuidv4 } from 'uuid';
+import clientAxios from '../../config/axios';
+import { ACTUAL_TASK, ADD_TASK, CLEAN_TASK, DELETE_TASK, PROJECT_TASKS, UPDATE_TASK, VALIDATE_TASK } from '../../types';
 import TaskContext from './taskContext';
 import taskReducer from './taskReducer';
 
 const TaskState = props => {
     const initialState = {
-        tasks: [
-            {id: 1, name: 'Elegir Plataforma', status: true, projectId: 1 },
-            {id: 2, name: 'Elegir Colores', status: false, projectId: 2 },
-            {id: 3, name: 'Elegir Hosting', status: true, projectId: 1 },
-        ],
-        projectTasks: null,
+        projectTasks: [],
         taskError: false,
         selectedTask: null
     }
@@ -20,20 +16,31 @@ const TaskState = props => {
     const [state, dispatch] = useReducer(taskReducer, initialState);
 
     // obtener las tareas de un proyecto
-    const getTasks = projectId => {
-        dispatch({
-            type: PROJECT_TASKS,
-            payload: projectId
-        })
+    const getTasks = async project => {
+        try {
+            const response = await clientAxios.get('/api/tasks', { params: { project } });
+            console.log(response);
+            dispatch({
+                type: PROJECT_TASKS,
+                payload: response.data.tasks
+            })
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     // agregar una tarea al proyecto seleccionado
-    const addTask = task => {
-        task.id = uuidv4();
-        dispatch({
-            type: ADD_TASK,
-            payload: task
-        })
+    const addTask = async task => {
+        try {
+            const response = await clientAxios.post('/api/tasks', task);
+            console.log(response);
+            dispatch({
+                type: ADD_TASK,
+                payload: task
+            })
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     // valida y muestra una error en caso de que sea necesario
@@ -44,19 +51,39 @@ const TaskState = props => {
     }
 
     // eliminar tarea por id
-    const deleteTask = id => {
-        dispatch({
-            type: DELETE_TASK,
-            payload: id
-        })
+    const deleteTask = async (id, project) => {
+        try {
+            await clientAxios.delete(`/api/tasks/${id}`, { params: { project } })
+            dispatch({
+                type: DELETE_TASK,
+                payload: id
+            })
+        } catch (error) {
+            console.log(error);
+        }
     }
 
-    // cambia el estado de cada tarea
-    const changeTaskStatus = task => {
-        dispatch({
-            type: TASK_STATUS,
-            payload: task
-        })
+    // // cambia el estado de cada tarea
+    // const changeTaskStatus = task => {
+    //     dispatch({
+    //         type: TASK_STATUS,
+    //         payload: task
+    //     })
+    // }
+
+    // edita una tarea
+    const updateTask = async task => {
+        try {
+            const response = await clientAxios.put(`/api/tasks/${task._id}`, task)
+            console.log(response);
+            dispatch({
+                type: UPDATE_TASK,
+                payload: response.data.taskExists
+            })
+        } catch (error) {
+            console.log(error);
+        }
+
     }
 
     // extrae una tarea para edicion
@@ -67,13 +94,7 @@ const TaskState = props => {
         })
     }
 
-    // edita una tarea
-    const updateTask = task => {
-        dispatch({
-            type: UPDATE_TASK,
-            payload: task
-        })
-    }
+
 
     const cleanTask = () => {
         dispatch({
@@ -92,7 +113,6 @@ const TaskState = props => {
                 addTask,
                 validateTask,
                 deleteTask,
-                changeTaskStatus,
                 setActualTask,
                 updateTask,
                 cleanTask

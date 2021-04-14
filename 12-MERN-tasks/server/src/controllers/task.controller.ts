@@ -35,7 +35,7 @@ export const getTasks = async (req: Request | any, res: Response) => {
 
     try {
         // extraer el proyecto y comprobar si existe
-        const { project } = req.body;
+        const { project } = req.query;
         const projectDB = await Project.findById(project);
         // si el proyecto existe o no
         if (!projectDB) {
@@ -47,7 +47,7 @@ export const getTasks = async (req: Request | any, res: Response) => {
         }
 
         // obtener las tareas por proyecto
-        const tasks = await Task.find({ project });
+        const tasks = await Task.find({ project }).sort({ createdAt: -1 });
         res.json({ tasks });
     } catch (error) {
         console.log(error);
@@ -75,8 +75,8 @@ export const updateTask = async (req: Request | any, res: Response) => {
         }
         // crear un objeto con la nueva información
         const newTask: any = {};
-        if (name) newTask.name = name;
-        if (status) newTask.status = status;
+        newTask.name = name;
+        newTask.status = status;
 
         taskExists = await Task.findByIdAndUpdate(
             { _id: req.params.id }, newTask, { new: true }
@@ -91,7 +91,7 @@ export const updateTask = async (req: Request | any, res: Response) => {
 export const deleteTask = async (req: Request | any, res: Response) => {
     try {
         // extraer el proyecto y comprobar si existe
-        const { project } = req.body;
+        const { project } = req.query;
         // si la tarea existe o no
         let taskExists = await Task.findById(req.params.id);
         if (!taskExists) {
@@ -106,8 +106,8 @@ export const deleteTask = async (req: Request | any, res: Response) => {
             return res.status(401).json({ msg: 'No autorizado' });
         }
         // eliminar
-        await Task.findByIdAndRemove({_id: req.params.id});
-        res.json({msg: 'Tarea Eliminada'})
+        await Task.findByIdAndRemove({ _id: req.params.id });
+        res.json({ msg: 'Tarea Eliminada' })
     } catch (error) {
         console.log(error);
         res.status(500).send('Error en el servidor');

@@ -4,26 +4,26 @@ import TaskContext from '../../context/tasks/taskContext';
 
 const TaskItem = ({ task }) => {
     const projectsContext = useContext(projectContext);
-    const {project} = projectsContext;
+    const { project } = projectsContext;
 
     // obtener values del context
     const tasksContext = useContext(TaskContext);
-    const {deleteTask, getTasks, changeTaskStatus, setActualTask} = tasksContext;
+    const { deleteTask, getTasks, updateTask, setActualTask } = tasksContext;
 
     // funcion que se ejecuta cuando se elimina la tarea
     const handleDelete = id => {
-        deleteTask(id);
-        getTasks(project.id);
+        deleteTask(id, project._id);
+        getTasks(project._id);
     }
 
     // funcion que modifica el estado
     const changeStatus = task => {
-        if(task.status) {
+        if (task.status) {
             task.status = false;
         } else {
             task.status = true;
         }
-        changeTaskStatus(task);
+        updateTask(task);
     }
 
     // agrega una tarea actual cuando lo quiere editar
@@ -60,7 +60,7 @@ const TaskItem = ({ task }) => {
                     Editar
                 </button>
                 <button type="button" className="btn btn-secundario"
-                    onClick={() => handleDelete(task.id)}>
+                    onClick={() => handleDelete(task._id)}>
                     Eliminar
                 </button>
             </div>
